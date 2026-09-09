@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Dashboard</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <main class="dashboard">
+            <section class="clock-section">
+                <div id="clock">1:30 PM</div>
+                <div id="date">Wednesday, 9 September 2026</div>
+                <div id="current-task">Designing Webinar Certificate</div>
+            </section>
+            <section class="quote-selection">
+                <p id="quote">Fetching Today's quote...</p>
+                <p id="author"></p>
+            </section>
+            <div class="shortcuts">
+                <button class="shortcut" onclick="openShortcut('https://ielts.idp.com/prepare/academic-and-ukvi')">
+                    IELTS
+                </button>
+                <button class="shortcut" onclick="openShortcut('https://www.youtube.com/')">
+                    Youtube
+                </button>
+                <button class="shortcut" onclick="openShortcut('https://www.instagram.com/')">
+                    Instagram
+                </button>
+                <button class="shortcut add-button" onclick="addShortcut()">
+                    +
+                </button>
+            </div>
+            <section class="task-section">
+                <h2>Task Of The Day</h2>
+                <div class="task">
+                    <div class="task-content">
+                        <strong>Designing Webinar Certificates</strong>>
+                    </div>
+
+                    <button class="edit-task">O</button>
+                    <button class="complete-task">v</button>
+                </div>
+            </section>
+        </main>
+
+        <script src="script.js"></script>
+
+    </body>
+</html>
