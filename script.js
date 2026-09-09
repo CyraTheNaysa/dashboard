@@ -56,16 +56,111 @@ function addtask(){
     }
     const task = document.createElement("div");
     task.classList.add("task");
+    task.draggable = true;
     task.innerHTML =`
     <div class="task-content">
         <strong id="task-name">${taskname}</strong>
         <span id="task-deadline">${deadline}</span>
     </div>
     <button class="edit-task">O</button>
-    <button class="complete-task">v</button>`;
+    <button class="complete-task">v</button>
+    <button class="delete-task">X</button>`;
 
     document.getElementById("task-list").appendChild(task);
+    savetasklist();
 }
+
+function savetasklist(){
+    const tasks = document.querySelectorAll("#task-list .task");
+    const tasklist = [];
+
+    tasks.forEach(task => {
+        tasklist.push({
+            name: task.querySelector(".task-content strong").textContent,
+            deadline: task.querySelector(".task-content span").textContent,
+            completed: task.classList.contains("completed")
+        });
+    });
+
+    localStorage.setItem("tasklist", JSON.stringify(tasklist));
+}
+
+function loadtasklist(){
+    const savedlist = localStorage.getItem("tasklist");
+    if(!savedlist){
+        return;
+    }
+    const tasklist = JSON.parse(savedlist);
+    const container = document.getElementById("task-list");
+
+    container.innerHTML = "";
+
+    tasklist.forEach(item => {
+        const task = document.createElement("div");
+        task.classList.add("task");
+        task.draggable = true;
+
+        if(item.completed){
+            task.classList.add("completed");
+        }
+
+        task.innerHTML = `
+            <div class="task-content">
+                <strong>${item.name}</strong>
+                <span>${item.deadline}</span>
+            </div>
+
+            <button class="edit-task">O</button>
+            <button class="complete-task">v</button>
+            <button class="delete-task">X</button>
+        `;
+
+        container.appendChild(task);
+    });
+}
+
+let draggedtask = null;
+document.addEventListener("dragstart", function(e){
+    if(e.target.classList.contains("task")){
+        draggedtask = e.target;
+    }
+});
+
+function deletetask(task){
+    task.remove
+}
+
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("delete-task")){
+        const task = e.target.closest(".task");
+        if(task){
+            task.remove();
+            savetasklist();
+        }
+    }
+});
+
+document.addEventListener("dragover", function(e){
+    e.preventDefault();
+    const target = e.target.closest(".task");
+    if(!target || target === draggedtask){
+        return;
+    }
+    const list = document.getElementById("task-list");
+    const tasks = [...list.children];
+
+    const draggedindex = tasks.indexOf(draggedtask);
+    const targetindex = tasks.indexOf(target);
+    if(draggedindex < targetindex){
+        list.insertBefore(draggedtask,target.nextSibling);
+    }else{
+        list.insertBefore(draggedtask, target);
+    }
+});
+
+document.addEventListener("dragend", function(){
+    savetasklist();
+});
 
 function openShortcut(url){
     window.open(url, "_blank");
@@ -134,32 +229,51 @@ function loadshortcuts(){
 }
 loadshortcuts();
 
-const completebutton = document.querySelector(".complete-task");
-completebutton.addEventListener("click",function(){
-    const task = document.querySelector(".task");
-    task.classList.toggle("completed");
-    savetask();
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("complete-task")){
+        const task = e.target.closest(".task");
+
+        if(task){
+            task.classList.toggle("completed");
+            savetasklist();
+        }
+    }
 });
-const editbutton = document.querySelector(".edit-task");
 
-editbutton.addEventListener("click",function(){
-    const taskname = prompt(
-        "Enter new task name: ", document.getElementById("task-name").textContent
-    );
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("edit-task")){
+        const task = e.target.closest(".task");
 
-    if(taskname == null || taskname.trim() === ""){
-        return;
+        if(!task){
+            return;
+        }
+
+        const nameelement = task.querySelector(".task-content strong");
+        const deadlineelement = task.querySelector(".task-content span");
+
+        const taskname = prompt(
+            "Enter new task name:",
+            nameelement.textContent
+        );
+
+        if(taskname == null || taskname.trim() === ""){
+            return;
+        }
+
+        const deadline = prompt(
+            "Deadline:",
+            deadlineelement.textContent.replace("Deadline : ", "")
+        );
+
+        if(deadline == null || deadline.trim() === ""){
+            return;
+        }
+
+        nameelement.textContent = taskname;
+        deadlineelement.textContent = "Deadline : " + deadline;
+
+        savetasklist();
     }
-    const deadline = prompt(
-        "Deadline : ",
-        document.getElementById("task-deadline").textContent.replace("Deadline : ", "")
-    );
-    if(deadline == null || deadline.trim() === ""){
-        return;
-    }
-    document.getElementById("task-name").textContent = taskname;
-    document.getElementById("task-deadline").textContent = "Deadline : " + deadline;
-    savetask();
 });
 
 function updatecurrenttask(){
@@ -191,6 +305,7 @@ function loadtask(){
     if(!savedtask){
         return;
     }
+
     const task = JSON.parse(savedtask);
     document.getElementById("task-name").textContent = task.name;
     document.getElementById("task-deadline").textContent = task.deadline;
@@ -199,7 +314,8 @@ function loadtask(){
     }
 
 }
-loadtask();
+loadtasklist();
+
 
 const schedule ={
     Monday: {
