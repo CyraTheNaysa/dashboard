@@ -45,6 +45,28 @@ async function getquote(){
 }
 getquote();
 
+function addtask(){
+    const taskname = prompt("Task name :")
+    if(taskname == null || taskname.trim()=== ""){
+        return;
+    }
+    const deadline = prompt("Deadline :");
+    if(deadline == null || deadline.trim()=== ""){
+        return;
+    }
+    const task = document.createElement("div");
+    task.classList.add("task");
+    task.innerHTML =`
+    <div class="task-content">
+        <strong id="task-name">${taskname}</strong>
+        <span id="task-deadline">${deadline}</span>
+    </div>
+    <button class="edit-task">O</button>
+    <button class="complete-task">v</button>`;
+
+    document.getElementById("task-list").appendChild(task);
+}
+
 function openShortcut(url){
     window.open(url, "_blank");
 }
@@ -63,8 +85,9 @@ function addShortcut(){
         finalurl = "https://" + finalurl;
     }
     const button = document.createElement("button");
-    button.classList.add("shortcut");
+    button.classList.add("shortcut","custom-shortcut");
     button.textContent = name;
+    button.dataset.url = finalurl;
 
     button.onclick = function(){
         openShortcut(finalurl);
@@ -73,12 +96,49 @@ function addShortcut(){
     document.querySelector(".shortcuts").insertBefore(
         button, addbutton
     );
+    saveshortcuts();
 }
+
+function saveshortcuts(){
+    const buttons = document.querySelectorAll(".custom-shortcut");
+    const shortcuts = [];
+    buttons.forEach(button => {
+        shortcuts.push({
+            name: button.textContent,
+            url: button.dataset.url
+        });
+        localStorage.setItem("shortcuts", JSON.stringify(shortcuts));
+    });
+}
+
+function loadshortcuts(){
+    const savedshortcuts = localStorage.getItem("shortcuts");
+    if(!savedshortcuts){
+        return;
+    }
+    const shortcuts = JSON.parse(savedshortcuts);
+    const container = document.querySelector(".shortcuts");
+    const addbutton = document.querySelector(".add-shortcut");
+
+    shortcuts.forEach(shortcut => {
+        const button = document.createElement("button");
+        button.classList.add("shortcut", "custom-shortcut");
+        button.textContent = shortcut.name;
+        button.dataset.url = shortcut.url;
+
+        button.onclick = function(){
+            openShortcut(shortcut.url);
+        };
+        container.insertBefore(button, addbutton);
+    });
+}
+loadshortcuts();
 
 const completebutton = document.querySelector(".complete-task");
 completebutton.addEventListener("click",function(){
     const task = document.querySelector(".task");
     task.classList.toggle("completed");
+    savetask();
 });
 const editbutton = document.querySelector(".edit-task");
 
@@ -99,19 +159,29 @@ editbutton.addEventListener("click",function(){
     }
     document.getElementById("task-name").textContent = taskname;
     document.getElementById("task-deadline").textContent = "Deadline : " + deadline;
-    updatecurrenttask();
     savetask();
 });
 
 function updatecurrenttask(){
-    const taskname = document.getElementById("task-name").textContent;
-    document.getElementById("current-task").textContent = taskname;
+    const now = new Date();
+    const day = now.toLocaleDateString("en-US",{
+        weekday: "long"
+    });
+
+    const period = gettimeperiod();
+    let currenttask = schedule[day][period];
+    if(typeof currenttask === "object"){
+        const weektype = getweektype();
+        currenttask = currenttask[weektype];
+    }
+    document.getElementById("current-task").textContent = currenttask;
 }
 
 function savetask(){
     const task = {
         name: document.getElementById("task-name").textContent,
-        deadline: document.getElementById("task-deadline").textContent
+        deadline: document.getElementById("task-deadline").textContent,
+        completed: document.querySelector(".task").classList.contains("completed")
     };
     localStorage.setItem("task", JSON.stringify(task));
 }
@@ -124,6 +194,83 @@ function loadtask(){
     const task = JSON.parse(savedtask);
     document.getElementById("task-name").textContent = task.name;
     document.getElementById("task-deadline").textContent = task.deadline;
-    updatecurrenttask();
+    if(task.completed){
+        document.querySelector(".task").classList.add("completed");
+    }
+
 }
 loadtask();
+
+const schedule ={
+    Monday: {
+        morning : "IELTS Writing",
+        afternoon : "Task Of The Day",
+        night : "Draft Essay"
+    },
+    Tuesday: {
+        morning : "IELTS Reading",
+        afternoon : "Task Of The Day",
+        night : "Do Whatever"
+    },
+    Wednesday: {
+        morning : "IELTS Listening",
+        afternoon : "Task Of The Day",
+        night : {
+            A:"MEXT Math Paper",
+            B:"MEXT Research"
+        }
+    },
+    Thursday: {
+        morning : "IELTS Speaking",
+        afternoon : "Task Of The Day",
+        night : {
+            A:"MEXT Research",
+            B:"MEXT English Paper"
+        }
+    },
+    Friday: {
+        morning : "IELTS Mock Test",
+        afternoon : "Task Of The Day",
+        night : {
+            A:"MEXT English Paper",
+            B:"MEXT Math Paper"
+        }
+    },
+    Saturday: {
+        morning : "IELTS Class",
+        afternoon : "Task Of The Day",
+        night : "Do Whatever"
+    },
+    Sunday: {
+        morning : "Sleep in",
+        afternoon : "Task Of The Day",
+        night : "Do Whatever"
+    }
+}
+
+function gettimeperiod(){
+    const hour = new Date().getHours();
+
+    if(hour < 12){
+        return "morning";
+    }
+    if(hour < 18){
+        return "afternoon";
+    }
+    return "night";
+}
+
+function getweektype(){
+    const now = new Date();
+    const startofyear = new Date(now.getFullYear(),0,1);
+    const dayspassed = Math.floor(
+        (now - startofyear) / (1000*60*60*24)
+    );
+    const weeknumber = Math.ceil(
+        (dayspassed + startofyear.getDay() + 1)/7
+    );
+
+    return weeknumber % 2 === 0 ? "B" : "A";
+}
+updatecurrenttask();
+setInterval(updatecurrenttask, 60000);
