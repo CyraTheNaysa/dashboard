@@ -8,16 +8,23 @@
     </head>
     <body>
         <main class="dashboard">
-            <section class="clock-section">
-                <div id="clock">1:30 PM</div>
-                <div id="date">Wednesday, 9 September 2026</div>
-                <div id="current-task"></div>
-            </section>
-            <section class="quote-selection">
-                <p id="quote">Fetching Today's quote...</p>
-                <p id="author"></p>
-            </section>
+            <div class="top-section">
+
+                <section class="clock-section">
+                    <div id="clock">1:30 PM</div>
+                    <div id="date">Wednesday, 9 September 2026</div>
+                    <div id="current-task"></div>
+                </section>
+
+                <section class="quote-selection">
+                    <h1>Daily Quote :</h1>
+                    <p id="quote">Fetching Today's quote...</p>
+                    <p id="author"></p>
+                </section>
+
+            </div>
             <div class="shortcuts">
+                <h1>Shortcuts</h1>
                 <button class="shortcut add-button" onclick="addShortcut()">
                     +
                 </button>
@@ -38,8 +45,8 @@
                 <div id="task-list">
                     <div class="task" draggable="true">
                         <div class="task-content">
-                            <strong id="task-name">Designing Webinar Certificates</strong>>
-                            <span id="task-deadline">Deadline : 9 September</span>
+                            <strong id="task-name"></strong>>
+                            <span id="task-deadline">Deadline : </span>
                         </div>
 
                         <button class="edit-task">O</button>
