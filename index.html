@@ -11,13 +11,16 @@
             <section class="clock-section">
                 <div id="clock">1:30 PM</div>
                 <div id="date">Wednesday, 9 September 2026</div>
-                <div id="current-task">Designing Webinar Certificate</div>
+                <div id="current-task"></div>
             </section>
             <section class="quote-selection">
                 <p id="quote">Fetching Today's quote...</p>
                 <p id="author"></p>
             </section>
             <div class="shortcuts">
+                <button class="shortcut add-button" onclick="addShortcut()">
+                    +
+                </button>
                 <button class="shortcut" onclick="openShortcut('https://ielts.idp.com/prepare/academic-and-ukvi')">
                     IELTS
                 </button>
@@ -27,15 +30,13 @@
                 <button class="shortcut" onclick="openShortcut('https://www.instagram.com/')">
                     Instagram
                 </button>
-                <button class="shortcut add-button" onclick="addShortcut()">
-                    +
-                </button>
             </div>
             <section class="task-section">
                 <h2>Task Of The Day</h2>
                 <div class="task">
                     <div class="task-content">
-                        <strong>Designing Webinar Certificates</strong>>
+                        <strong id="task-name">Designing Webinar Certificates</strong>>
+                        <span id="task-deadline">Deadline : 9 September</span>
                     </div>
 
                     <button class="edit-task">O</button>
