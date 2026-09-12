@@ -18,6 +18,14 @@ Right now I still wanted to keep it simple..
 - Javascript should go to hell
 - DummyJSON API for the cool motivational quote
 
+#How I built it
+- I build this project from scratch and focused on making sure a feature is fully working before working on another ones (i hate bugs)
+- I started with the basic HTML and made the basic clock first. Then I added javascript so the time and day could update automatically
+- After that, I added the daily quote using DummyJSON API. I also used localStorage to store the quote and author so that it would refresh daily
+- Then, I worked on the shortcuts section where I could add websites I often use
+- The task of the day section was probably the most annoying part. I added the ability to create new tasks, edit them, mark them as completed, delete them, and drag them around to change their order
+- Finally, I made a schedule system using JavaScript objects. The dashboard checks the current day and time, then automatically displays the task I should be doing. Some of the MEXT tasks also change between Week A and Week B (weekly tasks)
+
 #Why I develop this amazing dashboard
 - I want that hardware grant
 - I say yes to everything and I hate to do apps
